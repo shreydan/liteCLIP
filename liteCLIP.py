@@ -4,6 +4,7 @@ from transformers import AutoModel, AutoConfig
 from timm import create_model
 from config import Config    
 
+
 class ImageEncoder(nn.Module):
     def __init__(self, model_name):
         super().__init__()
