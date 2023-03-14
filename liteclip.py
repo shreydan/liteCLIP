@@ -5,7 +5,7 @@ import torchvision.transforms as T
 from torchvision.transforms import InterpolationMode
 from PIL import Image
 from transformers import AutoTokenizer
-from liteCLIP import CLIP
+from model import CLIP
 from config import Config    
 
 

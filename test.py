@@ -1,4 +1,4 @@
-from zeroshot import ZeroShotPipeline
+from liteclip import ZeroShotPipeline
 
 
 pipeline = ZeroShotPipeline()
