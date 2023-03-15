@@ -93,6 +93,18 @@ for label,prob in predictions:
 ```
 
 ```bibtex
+@misc{rw2019timm,
+  author = {Ross Wightman},
+  title = {PyTorch Image Models},
+  year = {2019},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  doi = {10.5281/zenodo.4414861},
+  howpublished = {\url{https://github.com/rwightman/pytorch-image-models}}
+}
+```
+
+```bibtex
 @article{turc2019,
   title={Well-Read Students Learn Better: On the Importance of Pre-training Compact Models},
   author={Turc, Iulia and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
