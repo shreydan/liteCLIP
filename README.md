@@ -1,5 +1,7 @@
 # liteCLIP
 
+## CLIP
+
 CLIP (Contrastive Language-Image Pre-Training) model is a deep learning model designed to understand the relationship between images and text. Specifically, CLIP is trained on a large corpus of text and images in a self-supervised manner to learn how to associate descriptive text with the visual content of images.
 
 #### It was introduced by [OpenAI](https://openai.com/research/clip)
@@ -10,11 +12,19 @@ CLIP (Contrastive Language-Image Pre-Training) model is a deep learning model de
 
 ---
 
-> the models released were generally large in size since they used ViT and transformer language models as the image and text encoders respectively.
-> I wanted to train a lighter version of it to understand how it works and how the contrastive loss function associates the images with the texts so I trained liteCLIP.
-> I tried to implement the loss function as per the pseudo-code provided in the paper.
+## liteCLIP
+
+The models released were generally large in size since they used ViT and transformer language models as the image and text encoders respectively.
+
+I wanted to train a lighter version of it to understand how it works and how the contrastive loss function associates the images with the texts so I trained liteCLIP.
+
+I tried to implement the loss function as per the pseudo-code provided in the paper.
+
+### trained using PyTorch, PyTorch Lightning
 
 ### it was trained on [Flickr8K](https://www.kaggle.com/datasets/adityajn105/flickr8k) which has ~8000 images with ~5 captions for each image.
+
+### you can go through the training procedure in this notebook: [training.ipynb](./training.ipynb)
 
 ```
 liteCLIP architecture:
@@ -32,7 +42,7 @@ optimizer: AdamW
 ```
 
 
-# Zero-Shot Inference:
+## Zero-Shot Inference:
 
 ![zero-shot inference](https://openaicom.imgix.net/d9d46e4b-6d6a-4f9e-9345-5c6538b1b8c3/overview-b.svg?fm=auto&auto=compress,format&fit=min&w=3840&h=2946)
 
@@ -61,7 +71,7 @@ for label,prob in predictions:
 - [@moein-shariatnia/OpenAI-CLIP](https://github.com/moein-shariatnia/OpenAI-CLIP)
 - [@openai/CLIP](https://github.com/openai/CLIP/tree/main/clip)
 
-# Citations
+## Citations
 
 ```bibtex
 @misc{https://doi.org/10.48550/arxiv.2103.00020,
