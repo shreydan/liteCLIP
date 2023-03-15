@@ -15,6 +15,7 @@ class ZeroShotPipeline:
 
         self.config = Config
         self.model = CLIP(self.config)
+        self.model.load_state_dict(torch.load(self.config.state_dict_path))
         self.model.eval()
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.text_encoder)
         
@@ -25,6 +26,7 @@ class ZeroShotPipeline:
             T.Normalize(mean=(0.48145466, 0.4578275, 0.40821073), 
                         std=(0.26862954, 0.26130258, 0.27577711))
         ])
+
 
     @torch.no_grad()
     def _get_image_embedding(self,image):
@@ -39,10 +41,9 @@ class ZeroShotPipeline:
         embeddings = self.model.img_projection(embeddings)
         return embeddings
     
+    
     @torch.no_grad()
     def _get_text_embeddings(self,labels):
-
-        assert len(labels) >= 2, "provide atleast 2 labels"
 
         text_inputs = self.tokenizer.batch_encode_plus(
             labels,
@@ -59,7 +60,12 @@ class ZeroShotPipeline:
 
     
     @torch.no_grad()
-    def predict(self,image:str, labels: list[str]):
+    def predict(self,image:str, labels: list[str],top_k:int=5):
+
+        assert len(labels) >= 2, "provide atleast 2 labels"
+
+        if len(labels) < top_k:
+            top_k = len(labels)
 
         image_embeddings = self._get_image_embedding(image)
         
@@ -69,5 +75,10 @@ class ZeroShotPipeline:
         
         logits = torch.flatten(logits)
         probabilities = torch.softmax(logits,dim=0)
+        values,indices = torch.topk(probabilities,k=top_k)
+        values = [v.item() for v in values]
+        indices = [i.item() for i in indices]
         
-        return list(zip(labels,probabilities))
+        result = [(labels[i],v) for v,i in zip(values,indices)]
+
+        return result
