@@ -48,6 +48,12 @@ optimizer: AdamW
 
 ### Usage:
 
+download model with `git-lfs`
+```bash
+git lfs install
+git clone https://github.com/shreydan/liteCLIP.git
+```
+
 ```python
 from liteclip import ZeroShotPipeline
 
