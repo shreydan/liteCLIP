@@ -30,15 +30,15 @@ I tried to implement the loss function as per the pseudo-code provided in the pa
 liteCLIP architecture:
 ----------------------
 
-image encoder: resnet50d
+image encoder: convnext_tiny
 text encoder: bert-mini (google/bert_uncased_L-4_H-256_A-4)
 max token length: 128
 embeddings dropout: 0.1
 embeddings dimension: 256
 batch size: 64
-learning rate: 1e-4
+learning rate: 2e-4
 epochs: 5
-optimizer: AdamW
+optimizer: Adam
 ```
 
 
