@@ -48,11 +48,7 @@ optimizer: Adam
 
 ### Usage:
 
-download model with `git-lfs`
-```bash
-git lfs install
-git clone https://github.com/shreydan/liteCLIP.git
-```
+download model from `Releases`, save in `./model` dir as `liteclip2.pt`
 
 ```python
 from liteclip import ZeroShotPipeline
