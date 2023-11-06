@@ -29,7 +29,7 @@ class ZeroShotPipeline:
 
 
     @torch.no_grad()
-    def _get_image_embedding(self,image):
+    def _prepare_image(self,image):
         try:
             img = Image.open(image).convert('RGB')
         except Exception:
@@ -37,13 +37,11 @@ class ZeroShotPipeline:
         img = self._img_tfms(img)
         img = torch.unsqueeze(img, 0)
 
-        embeddings = self.model.image_encoder(img)
-        embeddings = self.model.img_projection(embeddings)
-        return embeddings
+        return img
     
     
     @torch.no_grad()
-    def _get_text_embeddings(self,labels):
+    def _prepare_text(self,labels):
 
         text_inputs = self.tokenizer.batch_encode_plus(
             labels,
@@ -53,10 +51,7 @@ class ZeroShotPipeline:
             return_tensors='pt'
         )
 
-        embeddings = self.model.text_encoder(text_inputs)
-        embeddings = self.model.txt_projection(embeddings)
-
-        return embeddings
+        return text_inputs
 
     
     @torch.no_grad()
@@ -67,12 +62,12 @@ class ZeroShotPipeline:
         if len(labels) < top_k:
             top_k = len(labels)
 
-        image_embeddings = self._get_image_embedding(image)
+        img = self._prepare_image(image)
+        text = self._prepare_text(labels)
+
+        logits,_ = self.model((img,text))
         
-        text_embeddings = self._get_text_embeddings(labels)
-        
-        logits = text_embeddings @ image_embeddings.T
-        
+        print('logits',logits)
         logits = torch.flatten(logits)
         probabilities = torch.softmax(logits,dim=0)
         values,indices = torch.topk(probabilities,k=top_k)
