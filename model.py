@@ -1,5 +1,7 @@
+import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from transformers import AutoModel, AutoConfig
 from timm import create_model
 from config import Config    
@@ -13,12 +15,11 @@ class ImageEncoder(nn.Module):
                                      pretrained=False, 
                                      num_classes=1,
                                     )
-        self.embed_dim = self.backbone.fc.in_features
-        self.backbone.fc = nn.Identity()
+        self.embed_dim = self.backbone.head.fc.in_features
+        self.backbone.head.fc = nn.Identity()
         
     def forward(self,x):
         return self.backbone(x)
-    
 
 
 class TextEncoder(nn.Module):
@@ -42,7 +43,6 @@ class TextEncoder(nn.Module):
         return pooled_output
     
 
-
 class ProjectionHead(nn.Module):
     def __init__(self, embed_dim, Config):
         super().__init__()
@@ -59,9 +59,7 @@ class ProjectionHead(nn.Module):
         x = self.proj(x)
         out = self.act(x)
         out = self.drop(out)
-        x = x + out
-        x = self.ln(x)
-        return x
+        return x + self.ln(out)
     
 
 class CLIP(nn.Module):
@@ -77,20 +75,27 @@ class CLIP(nn.Module):
         self.img_projection = ProjectionHead(self.im_embed_dim,Config)
         self.txt_projection = ProjectionHead(self.txt_embed_dim,Config)
         
+        self.logit_scale = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
+        
         
     def forward(self,inputs):
         image, text = inputs
         
         image_embeddings = self.image_encoder(image)
         image_embeddings = self.img_projection(image_embeddings)
+        image_embeddings = image_embeddings / image_embeddings.norm(dim=1,keepdim=True)
         
         text_embeddings = self.text_encoder(text)
         text_embeddings = self.txt_projection(text_embeddings)
+        text_embeddings = text_embeddings / text_embeddings.norm(dim=1,keepdim=True)
         
         # logits will be in the shape batch_size X batch_size
-        logits = (text_embeddings @ image_embeddings.T)
+        logits_scale = self.logit_scale.exp()
+        logits_per_image = logits_scale * (image_embeddings @ text_embeddings.t())
+        logits_per_text = logits_per_image.t()
         
-        return logits
+        return logits_per_image, logits_per_text
+
     
 
 
